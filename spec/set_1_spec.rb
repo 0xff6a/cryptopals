@@ -1,4 +1,6 @@
-require 'set_1'
+require 'decoders/single_char_xor'
+require 'decoders/text_scorer'
+require 'encoding/hex'
 
 describe 'Set 1' do
   context 'Challenge 1' do
@@ -23,7 +25,27 @@ describe 'Set 1' do
       hex_1 = '1c0111001f010100061a024b53535009181c'
       hex_2 = '686974207468652062756c6c277320657965'
 
-      expect(Hex::xor(hex_1, hex_2)).to eq '746865206b696420646f6e277420706c6179'
+      expect(Hex::bitwise_xor(hex_1, hex_2)).to eq '746865206b696420646f6e277420706c6179'
+    end
+  end
+
+  context 'Challenge 3' do
+    it 'can evaluate the frequency of characters in a string' do
+      expect(TextScorer.frequency('abbcccddddeeeee')).to eq({
+        a: 1, b: 2, c: 3, d: 4, e: 5
+      })
+    end
+
+    it 'can score strings based on character frequency vs average' do
+      english = TextScorer.calculate('hello my name is jeremy')
+      bad     = TextScorer.calculate('hello fhcsjkbv')
+      worse   = TextScorer.calculate('shvsbvkbs')
+
+      expect([bad, english, worse].sort).to eq [english, bad, worse] 
+    end
+
+    it 'can decrypt a single character xor-encoded hex string' do
+      
     end
   end
 end
