@@ -39,18 +39,21 @@ class TextScorer
   end
 
   def self.relative_frequency(string)
-    divisor = string.length.to_f
-    frequency(string).each_with_object({}) do |(letter, count), result| 
-      result[letter] = count / divisor
-    end
+    frequency(string, 1.0 / (string.length))
   end
 
-  def self.frequency(string)
+  def self.absolute_frequency(string)
+    frequency(string, 1.0)
+  end
+
+  private
+
+  def self.frequency(string, unit)
     string.chars.reduce({}) do |result, char|
       if result.has_key?(char)
-        (result[char] += 1) && result
+        (result[char] += unit) && result
       else
-        result.merge({char => 1}) 
+        result.merge({char => unit}) 
       end
     end
   end

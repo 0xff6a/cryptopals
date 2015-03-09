@@ -30,13 +30,13 @@ describe 'Set 1' do
   end
 
   context 'Challenge 3' do
-    it 'can evaluate the frequency of characters in a string' do
-      expect(TextScorer.frequency('abbcccddddeeeee')).to eq({
+    it 'TextScorer can evaluate the frequency of characters in a string' do
+      expect(TextScorer.absolute_frequency('abbcccddddeeeee')).to eq({
         "a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5
       })
     end
 
-    it 'can score strings based on character frequency vs average' do
+    it 'TextScorer can score strings based on character frequency vs average' do
       english = TextScorer.calculate('hello my name is jeremy')
       bad     = TextScorer.calculate('hello fhcsjkbv')
       worse   = TextScorer.calculate('shvsbvkbs')
@@ -44,9 +44,11 @@ describe 'Set 1' do
       expect([bad, english, worse].sort).to eq [english, bad, worse] 
     end
 
-    it 'can decrypt a single character xor-encoded hex string' do
-      s = '1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
-      expect(Decoder::SingleCharXOR.decode(s)).to eq "Cooking MC's like a pound of bacon"
+    it 'TextScorer can decrypt a single character xor-encoded hex string' do
+      input_s   =  '1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
+      output_s  = "Cooking MC's like a pound of bacon"
+
+      expect(Decoder::SingleCharXOR.decode(input_s).plaintext).to eq output_s
     end
   end
 end
