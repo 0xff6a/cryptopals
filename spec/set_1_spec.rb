@@ -32,7 +32,7 @@ describe 'Set 1' do
   context 'Challenge 3' do
     it 'can evaluate the frequency of characters in a string' do
       expect(TextScorer.frequency('abbcccddddeeeee')).to eq({
-        a: 1, b: 2, c: 3, d: 4, e: 5
+        "a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5
       })
     end
 
@@ -45,7 +45,8 @@ describe 'Set 1' do
     end
 
     it 'can decrypt a single character xor-encoded hex string' do
-      
+      s = '1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
+      expect(Decoder::SingleCharXOR.decode(s)).to eq "Cooking MC's like a pound of bacon"
     end
   end
 end
