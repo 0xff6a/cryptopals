@@ -10,6 +10,12 @@ module Bytes
       .unpack('H*')[0]
   end
 
+  def to_bin(buffer)
+    buffer
+      .map { |b| b.to_s(2) } 
+      .join
+  end
+
   def to_ascii(buffer)
     buffer.map(&:chr).join
   end
