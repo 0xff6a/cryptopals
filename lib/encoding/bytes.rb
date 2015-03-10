@@ -6,9 +6,11 @@ module Bytes
   end
 
   def to_hex(buffer)
-    buffer
-      .map(&:chr)
-      .join
+    to_ascii(buffer)
       .unpack('H*')[0]
+  end
+
+  def to_ascii(buffer)
+    buffer.map(&:chr).join
   end
 end

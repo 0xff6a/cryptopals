@@ -1,5 +1,6 @@
 require 'decoders/single_char_xor'
-require 'decoders/text_scorer'
+require 'analyzers/text_scorer'
+require 'analyzers/hamming_distance'
 require 'encoding/hex'
 require 'encoders/repeat_key_xor'
 
@@ -32,15 +33,15 @@ describe 'Set 1' do
 
   context 'Challenge 3' do
     it 'TextScorer can evaluate the frequency of characters in a string' do
-      expect(TextScorer.absolute_frequency('abbcccddddeeeee')).to eq({
+      expect(Analyzer::TextScorer.absolute_frequency('abbcccddddeeeee')).to eq({
         "a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5
       })
     end
 
     it 'TextScorer can score strings based on character frequency vs average' do
-      english = TextScorer.calculate('hello my name is jeremy')
-      bad     = TextScorer.calculate('hello fhcsjkbv')
-      worse   = TextScorer.calculate('shvsbvkbs')
+      english = Analyzer::TextScorer.calculate('hello my name is jeremy')
+      bad     = Analyzer::TextScorer.calculate('hello fhcsjkbv')
+      worse   = Analyzer::TextScorer.calculate('shvsbvkbs')
 
       expect([bad, english, worse].sort).to eq [english, bad, worse] 
     end
@@ -73,6 +74,15 @@ describe 'Set 1' do
         '0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272' +
         'a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f'
       )
+    end
+  end
+
+  context 'Challenge 6' do
+    it 'Analyzer can compute the hamming distance between two strings' do
+      s1 = 'this is a test'
+      s2 = 'wokka wokka!!!'
+
+      expect(Analyzer::HammingDistance.calculate(s1,s2)).to eq 37
     end
   end
 end

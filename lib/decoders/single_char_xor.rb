@@ -8,7 +8,7 @@ module Decoder
 
         xord    = Hex::bitwise_xor(hex_s, hex_c * buffer_size)
         string  = Hex::to_ascii(xord)
-        score   = TextScorer.calculate(string)
+        score   = Analyzer::TextScorer.calculate(string)
         
         if score < result.score
           result.plaintext = string
