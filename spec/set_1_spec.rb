@@ -32,13 +32,13 @@ describe 'Set 1' do
   end
 
   context 'Challenge 3' do
-    it 'TextScorer can evaluate the frequency of characters in a string' do
+    it 'Analyzer can evaluate the frequency of characters in a string' do
       expect(Analyzer::TextScorer.absolute_frequency('abbcccddddeeeee')).to eq({
         "a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5
       })
     end
 
-    it 'TextScorer can score strings based on character frequency vs average' do
+    it 'Analyzer can score strings based on character frequency vs average' do
       english = Analyzer::TextScorer.calculate('hello my name is jeremy')
       bad     = Analyzer::TextScorer.calculate('hello fhcsjkbv')
       worse   = Analyzer::TextScorer.calculate('shvsbvkbs')

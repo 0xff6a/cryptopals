@@ -34,11 +34,12 @@ module Analyzer
 
     def calculate(string)
       freq = relative_frequency(string)
-      diff = BENCHMARK.map do |letter, avg|
-        ( avg - (freq[letter] || 0) ) ** 2
-      end
-      
-      Math.sqrt(diff.reduce(&:+))
+
+      Math.sqrt(
+        BENCHMARK.inject(0) { |sum_sq, (letter, avg)|
+          sum_sq + ( avg - (freq[letter] || 0) ) ** 2
+        }
+      )
     end
 
     def relative_frequency(string)

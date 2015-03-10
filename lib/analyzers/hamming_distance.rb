@@ -1,4 +1,4 @@
-require_relative '../encoding/ascii'
+require_relative '../encoding/bytes'
 
 module Analyzer
   module HammingDistance

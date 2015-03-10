@@ -1,3 +1,5 @@
+require_relative 'decoder_result'
+
 module Decoder
   module SingleCharXOR
     module_function
@@ -23,16 +25,6 @@ module Decoder
 
     def all_hex_chars
       (0..255).to_a.map{ |b| b.chr.unpack('H*')[0] }
-    end
-
-    class DecoderResult
-      INITIAL_SCORE =  1
-
-      attr_accessor :plaintext, :score
-      
-      def initialize
-        @score = INITIAL_SCORE
-      end
     end
   end
 end
