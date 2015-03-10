@@ -1,6 +1,6 @@
 require_relative 'bytes'
 
-module Hex
+module B64
   module_function
 
   def to_ascii(hex_s)

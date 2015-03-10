@@ -10,8 +10,8 @@ module Ascii
   end
 
   def bitwise_xor(s1, s2)
-    Bytes::to_ascii(
-      Bytes::xor(
+    Bytes.to_ascii(
+      Bytes.xor(
         s1.bytes,
         s2.bytes
       )

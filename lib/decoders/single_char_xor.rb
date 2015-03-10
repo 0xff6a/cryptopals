@@ -8,8 +8,8 @@ module Decoder
       buffer_size = hex_s.size / 2
       all_hex_chars.reduce(DecoderResult.new) do |result, hex_c|
 
-        xord    = Hex::bitwise_xor(hex_s, hex_c * buffer_size)
-        string  = Hex::to_ascii(xord)
+        xord    = Hex.bitwise_xor(hex_s, hex_c * buffer_size)
+        string  = Hex.to_ascii(xord)
         score   = Analyzer::TextScorer.calculate(string)
         
         if score < result.score

@@ -5,7 +5,7 @@ module Encoder
     module_function
 
     def encode_to_hex(string, key)
-      Bytes::to_hex(encode(string, key))
+      Bytes.to_hex(encode(string, key))
     end
 
     private_class_method

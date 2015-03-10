@@ -1,8 +1,13 @@
 require 'decoders/single_char_xor'
+require 'decoders/repeat_key_xor'
 require 'analyzers/text_scorer'
 require 'analyzers/hamming_distance'
-require 'encoding/hex'
+
 require 'encoders/repeat_key_xor'
+
+require 'base64'
+require 'encoding/hex'
+require 'encoding/ascii'
 
 describe 'Set 1' do
   context 'Challenge 1' do
@@ -12,13 +17,13 @@ describe 'Set 1' do
     }
 
     it '#to_bin should convert a hex string to an ASCII string' do
-      expect(Hex::to_ascii(hex_s)).to eq "I'm killing your brain like a poisonous mushroom"
+      expect(Hex.to_ascii(hex_s)).to eq "I'm killing your brain like a poisonous mushroom"
     end
 
     it '#hex_to_base64 should convert a hex string to base64' do
       b64_s = 'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t'
 
-      expect(Hex::to_base64(hex_s)).to eq b64_s
+      expect(Hex.to_base64(hex_s)).to eq b64_s
     end   
   end 
 
@@ -27,7 +32,7 @@ describe 'Set 1' do
       hex_1 = '1c0111001f010100061a024b53535009181c'
       hex_2 = '686974207468652062756c6c277320657965'
 
-      expect(Hex::bitwise_xor(hex_1, hex_2)).to eq '746865206b696420646f6e277420706c6179'
+      expect(Hex.bitwise_xor(hex_1, hex_2)).to eq '746865206b696420646f6e277420706c6179'
     end
   end
 
@@ -81,8 +86,16 @@ describe 'Set 1' do
     it 'Analyzer can compute the hamming distance between two strings' do
       s1 = 'this is a test'
       s2 = 'wokka wokka!!!'
+      h1 = Ascii.to_hex(s1)
+      h2 = Ascii.to_hex(s2)
 
-      expect(Analyzer::HammingDistance.calculate(s1,s2)).to eq 37
+      expect(Analyzer::HammingDistance.from_ascii(s1,s2)).to eq 37
+      expect(Analyzer::HammingDistance.from_hex(h1,h2)).to eq 37
+    end
+
+    it 'can guess the keysize for a ciphertext' do
+      input = Base64.decode64(File.read('resources/6.txt')).bytes
+      puts Decoder::RepeatKeyXOR.guess_keysize(input).inspect
     end
   end
 end
