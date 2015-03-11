@@ -5,7 +5,10 @@ module Decoder
     KEY_SIZE_MIN         = 2
     KEY_SIZE_MAX         = 40
 
-    def decode(hex_s)
+    def decode(hex_s, key)
+    end
+
+    def guess_key(hex_s)
       buffer = hex_s.bytes
       # Find the keysize
       sample   = buffer.first(KEY_SIZE_MAX * 2)
@@ -13,12 +16,19 @@ module Decoder
       
       # Break ciphertext into blocks of keysize length
       buffer.each_slice(key_size) do |block|
-      # Break blocks into byte chunks
-      # Solve each block using single char XOR
-      # For each block the single byte key that produces best score is single byte key
+      # Transpose blocks - make a block that is first byte of every block, 
+      # a block that is the second etc...
+
       end
+      # Solve each block (1st byte, second byte etc) using single char XOR
+      byte_blocks.each.reduce("") do
+        # return the single character XOR key
+      end
+      # For each block the single byte key that produces best score is single byte key
       # Put each byte key together to get the document key
     end
+
+    private_class_method
 
     def advanced_guess_keysize(bytes)
       # Do keysize twice on different blocks
@@ -38,8 +48,6 @@ module Decoder
         result
       end
     end
-
-    private_class_method
 
     def all_keysizes
       (KEY_SIZE_MIN..KEY_SIZE_MAX).to_a

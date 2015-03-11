@@ -15,6 +15,7 @@ module Decoder
         if score < result.score
           result.plaintext = string
           result.score     = score
+          result.key       = hex_c
         end
 
         result
