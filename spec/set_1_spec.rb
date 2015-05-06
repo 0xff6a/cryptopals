@@ -83,6 +83,8 @@ describe 'Set 1' do
   end
 
   context 'Challenge 6' do
+    let(:input) { Base64.decode64(File.read('resources/6.txt')) }
+
     it 'Analyzer can compute the hamming distance between two strings' do
       s1 = 'this is a test'
       s2 = 'wokka wokka!!!'
@@ -94,8 +96,20 @@ describe 'Set 1' do
     end
 
     it 'can guess the keysize for a ciphertext' do
-      input = Base64.decode64(File.read('resources/6.txt')).bytes
-      puts Decoder::RepeatKeyXOR.guess_keysize(input).inspect
+      key_size = Decoder::RepeatKeyXOR.advanced_guess_keysize(input.bytes)
+      
+      expect(key_size).to eq 29
+    end
+
+    it 'can decode a repeat-key XOR encoded message' do
+      key = Decoder::RepeatKeyXOR.guess_key(Ascii.to_hex(input))
+      msg = Decoder::RepeatKeyXOR.decode(Ascii.to_hex(input), key)
+
+      expect(msg).to include(
+        "I'm back and I'm ringin' the bell \n" +
+        "A rockin' on the mike while the fly girls yell \n" +
+        "In ecstasy in the back of me "
+      )
     end
   end
 end
