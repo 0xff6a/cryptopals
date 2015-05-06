@@ -3,14 +3,14 @@ require_relative 'single_char_xor'
 module Decoder
   module RepeatKeyXOR
     module_function
-    # Key size in bytes
-    KEY_SIZE_MIN           = 5
-    KEY_SIZE_MAX           = 40
+
+    KEY_SIZE_MIN  = 5
+    KEY_SIZE_MAX  = 40
 
     def decode(hex_s, hex_key)
-      blocks = hex_s.chars.each_slice(hex_key.size).map { |block_chars| block_chars.join('') }
+      cipher_blocks = chunk(hex_s, hex_key.size)
 
-      plain_blocks = blocks.map do |block|
+      plain_blocks = cipher_blocks.map do |block|
         Hex.bitwise_xor(block, hex_key)
       end
 
@@ -18,38 +18,27 @@ module Decoder
     end 
 
     def guess_key(hex_s)
-      buffer = Hex.to_bytes(hex_s)
-      
-      # Find the keysize
-      key_size = advanced_guess_keysize(buffer)
-      
-      # Break ciphertext into blocks of keysize length
-      same_key_blocks = hex_s.scan(/../).each_slice(key_size).to_a
+      key_size = advanced_guess_keysize(Hex.to_bytes(hex_s))
+      blocks   = hex_char_chunks(hex_s, key_size)
 
-      # Drop the last block which might be padded
-      same_key_blocks.pop
+      blocks.pop
+      blocks = blocks.transpose
 
-      # Transpose blocks - make a block that is first byte of every block, 
-      # a block that is the second etc...
-      same_key_blocks = same_key_blocks.transpose
-
-      # Solve each block (1st byte, second byte etc) using single char XOR
-      key_chars = same_key_blocks.map do |block|
+      key_chars = blocks.map do |block|
         Decoder::SingleCharXOR.decode(block.join(''))
       end
 
-      # Put each byte key together to get the document key
       key_chars.map(&:key).join('')
     end
 
     private_class_method
 
     def advanced_guess_keysize(bytes)
-      guesses = bytes.each_slice(KEY_SIZE_MAX * 2).to_a
-      guesses.pop
-      guesses = guesses.map { |block| guess_keysize(block) }
+      blocks = bytes.each_slice(KEY_SIZE_MAX * 2).to_a
+      blocks.pop
+      guesses = blocks.map { |block| guess_keysize(block) }
 
-      guesses.map(&:value).group_by{|i| i}.max{|x,y| x[1].length <=> y[1].length}[0]
+      mode(guesses.map(&:value))
     end
 
     def guess_keysize(bytes)
@@ -69,8 +58,19 @@ module Decoder
       (KEY_SIZE_MIN..KEY_SIZE_MAX).to_a
     end
 
+    def mode(fixnum_arr)
+      fixnum_arr.group_by{|i| i}.max{|x,y| x[1].length <=> y[1].length}[0]
+    end
+
+    def chunk(string, block_size)
+      string.chars.each_slice(block_size).map { |block_chars| block_chars.join('') }
+    end
+
+    def hex_char_chunks(string, block_size)
+      string.scan(/../).each_slice(block_size).to_a
+    end
+
     class KeysizeGuess
-      # Number of bits in max key size
       MAX_HAMMING_DISTANCE = KEY_SIZE_MAX * 8
 
       attr_accessor :value, :hamming_distance

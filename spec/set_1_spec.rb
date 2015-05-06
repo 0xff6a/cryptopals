@@ -97,7 +97,6 @@ describe 'Set 1' do
 
     it 'can guess the keysize for a ciphertext' do
       key_size = Decoder::RepeatKeyXOR.advanced_guess_keysize(input.bytes)
-      
       expect(key_size).to eq 29
     end
 
