@@ -1,11 +1,11 @@
 require 'openssl'
 
-module Decoder
+module Encryption
   module AES
     module ECB
       module_function
 
-      def is_encryption_for?(hex_s)
+      def is_used_for?(hex_s)
         # return true if the ciphertext is encrypted in ECB, false otherwise
         # guess keysize
         # count number of cipher blocks repeated

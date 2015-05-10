@@ -1,21 +1,31 @@
 require_relative 'single_char_xor'
 
-module Decoder
+module Encryption
   module RepeatKeyXOR
     module_function
 
     KEY_SIZE_MIN  = 5
     KEY_SIZE_MAX  = 40
 
+    def encode(ascii_s, ascii_key)
+      encoded_bytes = 
+        encrypt(
+          ascii_s.bytes, 
+          ascii_key.bytes
+        )
+
+      Bytes.to_hex(encoded_bytes)
+    end
+
     def decode(hex_s, hex_key)
-      cipher_blocks = chunk(hex_s, hex_key.size)
+      decoded_bytes = 
+        encrypt(
+          Hex.to_bytes(hex_s), 
+          Hex.to_bytes(hex_key)
+        )
 
-      plain_blocks = cipher_blocks.map do |block|
-        Hex.bitwise_xor(block, hex_key)
-      end
-
-      Hex.to_ascii(plain_blocks.join(''))
-    end 
+      Bytes.to_ascii(decoded_bytes)
+    end
 
     def guess_key(hex_s)
       key_size = advanced_guess_keysize(Hex.to_bytes(hex_s))
@@ -25,13 +35,22 @@ module Decoder
       blocks = blocks.transpose
 
       key_chars = blocks.map do |block|
-        Decoder::SingleCharXOR.decode(block.join(''))
+        Encryption::SingleCharXOR.decode(block.join(''))
       end
 
       key_chars.map(&:key).join('')
     end
 
     private_class_method
+
+    def encrypt(bytes, bytes_key)
+      key_size = bytes_key.length
+      
+      bytes.map.with_index do |byte, index|
+        k = bytes_key[index % key_size]
+        byte ^ k
+      end
+    end
 
     def advanced_guess_keysize(bytes)
       blocks = bytes.each_slice(KEY_SIZE_MAX * 2).to_a

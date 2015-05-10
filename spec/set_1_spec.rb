@@ -1,14 +1,13 @@
-require 'decoders/aes_ecb'
-require 'decoders/single_char_xor'
-require 'decoders/repeat_key_xor'
+require 'encryption/aes_ecb'
+require 'encryption/single_char_xor'
+require 'encryption/repeat_key_xor'
+
 require 'analyzers/text_scorer'
 require 'analyzers/hamming_distance'
 
-require 'encoders/repeat_key_xor'
-
 require 'base64'
-require 'encoding/hex'
-require 'encoding/ascii'
+require 'utils/hex'
+require 'utils/ascii'
 
 describe 'Set 1' do
   context 'Challenge 1' do
@@ -56,14 +55,14 @@ describe 'Set 1' do
       input_s   =  '1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
       output_s  = "Cooking MC's like a pound of bacon"
 
-      expect(Decoder::SingleCharXOR.decode(input_s).plaintext).to eq output_s
+      expect(Encryption::SingleCharXOR.decode(input_s).plaintext).to eq output_s
     end
   end
 
   xcontext 'Challenge 4 (skip for speed)' do
     it 'can identify the string encrypted with single character XOR' do
       input = File.readlines('resources/4.txt').map(&:chomp)
-      result = input.map { |s| Decoder::SingleCharXOR.decode(s) }
+      result = input.map { |s| Encryption::SingleCharXOR.decode(s) }
       string = result.sort_by(&:score).first.plaintext
 
       expect(string).to eq "Now that the party is jumping\n"
@@ -76,7 +75,7 @@ describe 'Set 1' do
       string  = "Burning 'em, if you ain't quick and nimble\n" +
                 "I go crazy when I hear a cymbal"
       
-      expect(Encoder::RepeatKeyXOR.encode_to_hex(string, key)).to eq(
+      expect(Encryption::RepeatKeyXOR.encode(string, key)).to eq(
         '0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272' +
         'a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f'
       )
@@ -97,13 +96,13 @@ describe 'Set 1' do
     end
 
     it 'can guess the keysize for a ciphertext' do
-      key_size = Decoder::RepeatKeyXOR.advanced_guess_keysize(input.bytes)
+      key_size = Encryption::RepeatKeyXOR.advanced_guess_keysize(input.bytes)
       expect(key_size).to eq 29
     end
 
     it 'can decode a repeat-key XOR encoded message' do
-      key = Decoder::RepeatKeyXOR.guess_key(Ascii.to_hex(input))
-      msg = Decoder::RepeatKeyXOR.decode(Ascii.to_hex(input), key)
+      key = Encryption::RepeatKeyXOR.guess_key(Ascii.to_hex(input))
+      msg = Encryption::RepeatKeyXOR.decode(Ascii.to_hex(input), key)
 
       expect(msg).to include(
         "I'm back and I'm ringin' the bell \n" +
@@ -118,7 +117,7 @@ describe 'Set 1' do
 
     it 'can decrypt an AES-ECB encoded file given the key' do
       key       = 'YELLOW SUBMARINE'
-      msg = Decoder::AES::ECB.decode(Ascii.to_hex(input), Ascii.to_hex(key))
+      msg = Encryption::AES::ECB.decode(Ascii.to_hex(input), Ascii.to_hex(key))
     
       expect(msg).to include(
         "I'm back and I'm ringin' the bell \n" +
@@ -128,11 +127,11 @@ describe 'Set 1' do
     end
   end
 
-  context 'Challenge 8' do
+  xcontext 'Challenge 8' do
     let(:input) { File.read('resources/8.txt').split("\n") }
 
     it 'can detect an AES-ECB encrypted text' do
-      
+
     end
   end
 end

@@ -1,4 +1,4 @@
-module Decoder
+module Encryption
   class DecoderResult
     INITIAL_SCORE =  1
 

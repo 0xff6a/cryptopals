@@ -1,6 +1,6 @@
 require_relative 'decoder_result'
 
-module Decoder
+module Encryption
   module SingleCharXOR
     module_function
     

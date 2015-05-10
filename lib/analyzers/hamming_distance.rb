@@ -1,5 +1,5 @@
-require_relative '../encoding/bytes'
-require_relative '../encoding/hex'
+require_relative '../utils/bytes'
+require_relative '../utils/hex'
 
 module Analyzer
   module HammingDistance
