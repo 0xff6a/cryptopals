@@ -1,3 +1,4 @@
+require 'decoders/aes_ecb'
 require 'decoders/single_char_xor'
 require 'decoders/repeat_key_xor'
 require 'analyzers/text_scorer'
@@ -109,6 +110,29 @@ describe 'Set 1' do
         "A rockin' on the mike while the fly girls yell \n" +
         "In ecstasy in the back of me "
       )
+    end
+  end
+
+  context 'Challenge 7' do
+    let(:input) { Base64.decode64(File.read('resources/7.txt')) }
+
+    it 'can decrypt an AES-ECB encoded file given the key' do
+      key       = 'YELLOW SUBMARINE'
+      msg = Decoder::AES::ECB.decode(Ascii.to_hex(input), Ascii.to_hex(key))
+    
+      expect(msg).to include(
+        "I'm back and I'm ringin' the bell \n" +
+        "A rockin' on the mike while the fly girls yell \n" +
+        "In ecstasy in the back of me "
+      )
+    end
+  end
+
+  context 'Challenge 8' do
+    let(:input) { File.read('resources/8.txt').split("\n") }
+
+    it 'can detect an AES-ECB encrypted text' do
+      
     end
   end
 end
