@@ -131,11 +131,10 @@ describe 'Set 1' do
     let(:input) { File.read('resources/8.txt').split("\n") }
 
     it 'can detect an AES-ECB encrypted text' do
-      index = input.index { |s| Oracle::AES::ECB.detected?(Ascii.to_hex(s)) }
-      size  = input.count { |s| Oracle::AES::ECB.detected?(Ascii.to_hex(s)) }
+      ecb_detected = lambda { |s| Oracle::AES::ECB.detected?(Ascii.to_hex(s)) }
 
-      expect(size).to eq 1
-      expect(index).to eq 132
+      expect(input.count(&ecb_detected)).to eq 1
+      expect(input.index(&ecb_detected)).to eq 132
     end
   end
 end

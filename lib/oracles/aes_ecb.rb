@@ -1,5 +1,5 @@
 require_relative '../encryption/repeat_key_xor'
-require_relative '../encryption/aes_ecb'
+require_relative '../encryption/aes'
 require_relative '../utils/hex'
 
 module Oracle
@@ -7,7 +7,7 @@ module Oracle
     module ECB
       module_function
 
-      BLOCK_SIZE_BYTES = Encryption::AES::ECB::BLOCK_SIZE_BYTES
+      BLOCK_SIZE_BYTES = Encryption::AES::BLOCK_SIZE_BYTES
 
       def detected?(hex_s)
         key_size_match?(hex_s) && repeated_blocks?(hex_s)

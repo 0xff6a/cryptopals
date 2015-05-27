@@ -24,6 +24,20 @@ describe 'Set 2' do
 
       expect(padded_s).to eq "YELLOW SUBMARINE YELLOW SUB\x05\x05\x05\x05\x05"
     end
+
+    it 'does not pad if the string size is a multiple of block size' do
+      s        = 'YELLOW SUBMARINE'
+      padded_s = PKCS7.pad_aes(s)
+
+      expect(padded_s).to eq s
+    end
+
+    it 'can remove padding' do
+      s         = "2afc4bacab28ef5c3686de177c030303"
+      trimmed_s = PKCS7.trim_aes(s)
+
+      expect(trimmed_s).to eq "2afc4bacab28ef5c3686de177c"
+    end
   end
 
   context 'Challenge 2' do
@@ -50,6 +64,24 @@ describe 'Set 2' do
       ciphertext = Encryption::AES::CBC.encode(plaintext, key, iv)
 
       expect(ciphertext).to eq Ascii.to_hex(input)
+    end
+  end
+
+  context 'Challenge 3' do
+    let(:plaintext) { File.read('resources/plain.txt') }
+
+    it 'should determine whether a plaintext has been encrypted with ECB' do
+      allow(Encryption::AES).to receive(:encryption_mode).and_return(:ECB)
+      ciphertext = Encryption::AES.random_encode(plaintext)
+
+      expect(Oracle::AES.detect(ciphertext)).to eq :ECB
+    end
+
+    it 'should determine whether a plaintext has been encrypted with CBC' do
+      allow(Encryption::AES).to receive(:encryption_mode).and_return(:CBC)
+      ciphertext = Encryption::AES.random_encode(plaintext)
+
+      expect(Oracle::AES.detect(ciphertext)).to eq :CBC
     end
   end
 end

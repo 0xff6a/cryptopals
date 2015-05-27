@@ -1,8 +1,10 @@
 require 'openssl'
 
+require_relative 'aes'
 require_relative 'aes_ecb'
 require_relative  '../utils/ascii'
 require_relative  '../utils/hex'
+require_relative  '../utils/pkcs7'
 
 module Encryption
   module AES
@@ -10,8 +12,7 @@ module Encryption
       module_function
       
       extend AES::ECB
-
-      BLOCK_SIZE_BYTES = 16
+      extend AES
 
       def encode(ascii_s, ascii_key, ascii_iv)
         # Encrypt block by block
@@ -35,7 +36,7 @@ module Encryption
         # -> m[0] = D(k, c[0]) ⨁ IV 
         # -> m[1] = D(k, c[1]) ⨁ c[0]
         # -> .....
-        ct        = PKCS7.pad_aes(Hex.to_ascii(hex_s))
+        ct        = Hex.to_ascii(hex_s)
         k         = Hex.to_ascii(hex_key)
         iv        = Hex.to_ascii(hex_iv) 
 
@@ -51,6 +52,7 @@ module Encryption
 
         decrypted_blocks.join('')
       end
+      
     end
   end
 end

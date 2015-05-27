@@ -1,11 +1,14 @@
 require 'openssl'
 
+require_relative 'aes'
+require_relative '../utils/pkcs7'
+
 module Encryption
   module AES
     module ECB
       module_function
 
-      BLOCK_SIZE_BYTES = 16
+      extend AES
 
       def encode(ascii_s, ascii_key)
         encrypter = build_cipher(:encrypt, ascii_key)
