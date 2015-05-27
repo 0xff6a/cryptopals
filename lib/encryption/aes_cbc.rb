@@ -19,6 +19,7 @@ module Encryption
         # -> c[0] = E(k, m[0] ⨁ IV)
         # -> c[1] = E(k, m[1] ⨁ c[0])
         # -> .....
+        ascii_s   = PKCS7.pad_aes(ascii_s)
         blocks    = Ascii.chunk(ascii_s, BLOCK_SIZE_BYTES)
         encrypter = build_cipher(:encrypt, ascii_key)
         
@@ -36,7 +37,7 @@ module Encryption
         # -> m[0] = D(k, c[0]) ⨁ IV 
         # -> m[1] = D(k, c[1]) ⨁ c[0]
         # -> .....
-        ct        = Hex.to_ascii(hex_s)
+        ct        = Hex.to_ascii(PKCS7.trim_aes(hex_s))
         k         = Hex.to_ascii(hex_key)
         iv        = Hex.to_ascii(hex_iv) 
 

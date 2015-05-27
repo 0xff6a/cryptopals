@@ -36,8 +36,10 @@ module PKCS7
 
   def invalid_pad?(hex_block)
     last_byte = hex_block[-2..-1]
-    pad_size  = last_byte.hex
+    pad_size  = 2*last_byte.hex
 
-    Hex.chunk(hex_block[0...-pad_size], 1).any?{ |b| b != last_byte }
+    return true if pad_size > hex_block.size
+
+    Hex.chunk(hex_block[-pad_size..-1], 1).any?{ |b| b != last_byte }
   end
 end

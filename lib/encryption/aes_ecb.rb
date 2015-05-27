@@ -11,14 +11,16 @@ module Encryption
       extend AES
 
       def encode(ascii_s, ascii_key)
+        ascii_s   = PKCS7.pad_aes(ascii_s)
         encrypter = build_cipher(:encrypt, ascii_key)
 
         encrypter.update(ascii_s) + encrypter.final
       end
 
       def decode(hex_s, hex_key)
-        ciphertext, key = Hex.to_ascii(hex_s), Hex.to_ascii(hex_key)
-        decrypter       = build_cipher(:decrypt, key)
+        ciphertext = Hex.to_ascii(PKCS7.trim_aes(hex_s))
+        key        = Hex.to_ascii(hex_key)
+        decrypter  = build_cipher(:decrypt, key)
 
         decrypter.update(ciphertext) + decrypter.final
       end
