@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 require 'encryption/aes_ecb'
 require 'encryption/single_char_xor'
 require 'encryption/repeat_key_xor'
@@ -6,10 +8,6 @@ require 'analyzers/text_scorer'
 require 'analyzers/hamming_distance'
 
 require 'oracles/aes_ecb'
-
-require 'base64'
-require 'utils/hex'
-require 'utils/ascii'
 
 describe 'Set 1' do
   context 'Challenge 1' do

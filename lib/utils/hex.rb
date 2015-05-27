@@ -23,4 +23,8 @@ module Hex
       )
     )
   end
+
+  def chunk(hex_s, size)
+    hex_s.scan(/.{1,#{size*2}}/)
+  end
 end

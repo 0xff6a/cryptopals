@@ -23,4 +23,8 @@ module Bytes
       .map(&:chr)
       .join
   end
+
+  def chunk(buffer, size)
+    buffer.each_slice(size).to_a
+  end
 end

@@ -17,4 +17,8 @@ module Ascii
       )
     )
   end
+
+  def chunk(ascii_s, size)
+    ascii_s.chars.each_slice(size).map { |block_chars| block_chars.join('') }
+  end
 end

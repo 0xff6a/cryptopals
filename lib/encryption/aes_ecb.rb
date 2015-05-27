@@ -4,7 +4,9 @@ module Encryption
   module AES
     module ECB
       module_function
-      
+
+      BLOCK_SIZE_BYTES = 16
+
       def encode(ascii_s, ascii_key)
         encrypter = build_cipher(:encrypt, ascii_key)
 
@@ -17,8 +19,6 @@ module Encryption
 
         decrypter.update(ciphertext) + decrypter.final
       end
-
-      private_class_method
 
       def build_cipher(type, key)
         cipher         =  OpenSSL::Cipher::AES128.new(:ECB)
