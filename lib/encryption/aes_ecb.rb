@@ -4,19 +4,18 @@ module Encryption
   module AES
     module ECB
       module_function
+      
+      def encode(ascii_s, ascii_key)
+        encrypter = build_cipher(:encrypt, ascii_key)
 
-      def is_used_for?(hex_s)
-        # return true if the ciphertext is encrypted in ECB, false otherwise
-        # guess keysize
-        # count number of cipher blocks repeated
-        # if > 1 return true
+        encrypter.update(ascii_s) + encrypter.final
       end
 
       def decode(hex_s, hex_key)
-        plaintext, key  = Hex.to_ascii(hex_s), Hex.to_ascii(hex_key)
+        ciphertext, key = Hex.to_ascii(hex_s), Hex.to_ascii(hex_key)
         decrypter       = build_cipher(:decrypt, key)
 
-        decrypter.update(plaintext) + decrypter.final
+        decrypter.update(ciphertext) + decrypter.final
       end
 
       private_class_method

@@ -5,6 +5,8 @@ require 'encryption/repeat_key_xor'
 require 'analyzers/text_scorer'
 require 'analyzers/hamming_distance'
 
+require 'oracles/aes_ecb'
+
 require 'base64'
 require 'utils/hex'
 require 'utils/ascii'
@@ -116,9 +118,9 @@ describe 'Set 1' do
     let(:input) { Base64.decode64(File.read('resources/7.txt')) }
 
     it 'can decrypt an AES-ECB encoded file given the key' do
-      key       = 'YELLOW SUBMARINE'
+      key = 'YELLOW SUBMARINE'
       msg = Encryption::AES::ECB.decode(Ascii.to_hex(input), Ascii.to_hex(key))
-    
+
       expect(msg).to include(
         "I'm back and I'm ringin' the bell \n" +
         "A rockin' on the mike while the fly girls yell \n" +
@@ -127,11 +129,15 @@ describe 'Set 1' do
     end
   end
 
-  xcontext 'Challenge 8' do
+  context 'Challenge 8' do
     let(:input) { File.read('resources/8.txt').split("\n") }
 
     it 'can detect an AES-ECB encrypted text' do
+      index = input.index { |s| Oracle::AES::ECB.detected?(Ascii.to_hex(s)) }
+      size  = input.count { |s| Oracle::AES::ECB.detected?(Ascii.to_hex(s)) }
 
+      expect(size).to eq 1
+      expect(index).to eq 132
     end
   end
 end
