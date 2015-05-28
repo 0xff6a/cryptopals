@@ -2,9 +2,10 @@ require 'spec_helper'
 
 require 'encryption/aes_cbc'
 require 'oracles/aes'
+require 'utils/url'
 
 describe 'Set 2' do
-  context 'Challenge 1' do
+  context 'Challenge 9' do
     it 'should implement PKCS7 padding' do
       s        = 'YELLOW SUBMARINE'
       padded_s = PKCS7.pad(s, 20)
@@ -41,7 +42,7 @@ describe 'Set 2' do
     end
   end
 
-  context 'Challenge 2' do
+  context 'Challenge 10' do
     let(:iv)        { "\x00" * 16                                    }
     let(:key)       { 'YELLOW SUBMARINE'                             }
     let(:input)     { Base64.decode64(File.read('resources/10.txt')) }
@@ -68,7 +69,7 @@ describe 'Set 2' do
     end
   end
 
-  context 'Challenge 3' do
+  context 'Challenge 11' do
     let(:plaintext) { File.read('resources/plain.txt') }
 
     it 'should determine whether a plaintext has been encrypted with ECB' do
@@ -86,7 +87,7 @@ describe 'Set 2' do
     end
   end
 
-  context 'Challenge 4' do
+  context 'Challenge 12' do
     let(:target) { 
       "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg" + 
       "aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq" +
@@ -103,6 +104,38 @@ describe 'Set 2' do
         "girlies on standby waving just to say hi\nDid you stop? No, I just " +
         "drove by\n\x01-----"
       )
+    end
+  end
+
+  context 'Challenge 13' do
+    it 'should be able to parse a structured cookie string' do
+      expect(URL.kv_parse("foo=bar&baz=qux&zap=zazzle")).to eq({
+        foo: 'bar',
+        baz: 'qux',
+        zap: 'zazzle'
+      })
+    end
+
+    it '#profile_for - should be able to create a user profile hash from an email' do
+      email = 'foo@bar.com'
+      allow(email).to receive(:hash).and_return 10
+
+      expect(URL.profile_for(email)).to eq({
+        email: email,
+        uid:   10,
+        role:  'user'
+      })
+    end
+
+    it '#profile_for - should not allow encoding metacharacters' do
+      email = 'foo@bar.com&role=admin'
+      allow(email).to receive(:hash).and_return 10
+
+      expect(URL.profile_for(email)).to eq({
+        email: 'foo@bar.com%26role%3Dadmin',
+        uid:   10,
+        role:  'user'
+      })
     end
   end
 end

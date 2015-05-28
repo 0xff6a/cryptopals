@@ -40,7 +40,7 @@ module Oracle
       # Discover cipher block size
       block_size = reveal_block_size(black_box)
       
-      # Detect ecb encryption
+      # Confirm ECB encrypted
       validate_ecb(black_box, block_size)
 
       # Decrypt byte-by-byte
@@ -54,7 +54,6 @@ module Oracle
       target_size = black_box.bytes_len
 
       (0...target_size).each do |n|
-
         pt         = PAD_CHAR * (target_size - n - 1)  
         ct         = black_box.encode(pt).slice(0, 2 * target_size)
         dictionary = {}
