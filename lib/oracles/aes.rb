@@ -41,20 +41,24 @@ module Oracle
       # Detect ecb encryption
       validate_ecb(black_box, block_size)
 
-      # Feed shorter block ''
-      ct = Hex.chunk(black_box.encode('A' * (block_size - 1)), block_size).first
+      known_bytes = ''
+      # For each byte in the block
+      (0...BLOCK_SIZE_BYTES).each do |n|
+        # Feed shorter block ''
+        pt = 'A' * (BLOCK_SIZE_BYTES - n - 1)  
+        ct = black_box.encode(pt).slice(0, 2*block_size)
+        # Create dictionary
+        dictionary = {}
 
-      # Create dictionary
-      dictionary = {}
+        (32..127).each do |byte|
+          clear_block     = pt + known_bytes + byte.chr
+          encrypted_block = black_box.encode(clear_block).slice(0, 2*block_size)
 
-      (0..255).each do |byte|
-        clear_block     = 'A' * (block_size - 1) + byte.chr
-        encrypted_block = Hex.chunk(black_box.encode(clear_block), block_size).first
-
-        dictionary[encrypted_block] = byte
+          dictionary[encrypted_block] = byte.chr
+        end
+        
+        known_bytes += dictionary[ct]
       end
-      
-      byte = dictionary[ct]
       binding.pry
     end
 
