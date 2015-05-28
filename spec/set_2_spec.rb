@@ -94,9 +94,15 @@ describe 'Set 2' do
       "YnkK"
     }
 
-    it 'can create a blackbox encoder' do
-      box = Oracle::AES::BlackBox.new(target)
-      Oracle::AES.reveal_content(box)
+    it 'should decrypt AES ECB encryption from a black box encoder' do
+      box     = Oracle::AES::BlackBox.new(target)
+      content = Oracle::AES.reveal_content(box)
+
+      expect(content).to eq(
+        "Rollin' in my 5.0\nWith my rag-top down so my hair can blow\nThe " +
+        "girlies on standby waving just to say hi\nDid you stop? No, I just " +
+        "drove by\n\x01-----"
+      )
     end
   end
 end

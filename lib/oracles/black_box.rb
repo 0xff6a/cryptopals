@@ -15,8 +15,12 @@ module Oracle
 
       def encode(ascii_s)
         plaintext = ascii_s + @unknown_s
-        
+
         Encryption::AES::ECB.encode(plaintext, @key)
+      end
+
+      def bytes_len
+        encode('').size / 2
       end
     end
   end

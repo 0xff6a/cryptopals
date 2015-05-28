@@ -14,6 +14,8 @@ module Oracle
     module_function
 
     BLOCK_SIZE_BYTES = Encryption::AES::BLOCK_SIZE_BYTES
+    PAD_CHAR         = 'A'
+    UNKNOWN_CHAR     = '-'
 
     def mode(hex_s)
       ecb_encrypted?(hex_s) ? :ECB : :CBC
@@ -41,37 +43,42 @@ module Oracle
       # Detect ecb encryption
       validate_ecb(black_box, block_size)
 
-      known_bytes = ''
-      # For each byte in the block
-      (0...BLOCK_SIZE_BYTES).each do |n|
-        # Feed shorter block ''
-        pt = 'A' * (BLOCK_SIZE_BYTES - n - 1)  
-        ct = black_box.encode(pt).slice(0, 2*block_size)
-        # Create dictionary
-        dictionary = {}
-
-        (32..127).each do |byte|
-          clear_block     = pt + known_bytes + byte.chr
-          encrypted_block = black_box.encode(clear_block).slice(0, 2*block_size)
-
-          dictionary[encrypted_block] = byte.chr
-        end
-        
-        known_bytes += dictionary[ct]
-      end
-      binding.pry
+      # Decrypt byte-by-byte
+      reveal_bytes(black_box, block_size)
     end
 
     private_class_method
 
+    def reveal_bytes(black_box, block_size)
+      known_bytes = ''
+      target_size = black_box.bytes_len
+
+      (0...target_size).each do |n|
+
+        pt         = PAD_CHAR * (target_size - n - 1)  
+        ct         = black_box.encode(pt).slice(0, 2 * target_size)
+        dictionary = {}
+
+        (0..255).each do |byte|
+          clear_block                 = pt + known_bytes + byte.chr
+          encrypted_block             = black_box.encode(clear_block).slice(0, 2 * target_size)
+          dictionary[encrypted_block] = byte.chr
+        end
+
+        known_bytes += dictionary[ct] || UNKNOWN_CHAR
+      end
+
+      known_bytes
+    end
+
     def validate_ecb(black_box, block_size)
-      test_s = black_box.encode('A' * (2 * block_size))
+      test_s = black_box.encode(PAD_CHAR * (2 * block_size))
 
       raise ArgumentError, 'Unknow ciphertext is not AES::ECB encrypted' unless ecb_encrypted?(test_s)
     end
 
     def reveal_block_size(black_box)
-      initial_size = black_box.encode('').size
+      initial_size = black_box.bytes_len * 2
       ctr          = 0
       
       loop do
