@@ -1,5 +1,4 @@
 require 'base64'
-require 'utils/base64'
 require 'utils/hex'
 require 'utils/ascii'
 require 'utils/bytes'

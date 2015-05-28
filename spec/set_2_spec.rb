@@ -85,4 +85,18 @@ describe 'Set 2' do
       expect(Oracle::AES.mode(ciphertext)).to eq :CBC
     end
   end
+
+  context 'Challenge 4' do
+    let(:target) { 
+      "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg" + 
+      "aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq" +
+      "dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg" +
+      "YnkK"
+    }
+
+    it 'can create a blackbox encoder' do
+      box = Oracle::AES::BlackBox.new(target)
+      Oracle::AES.reveal_content(box)
+    end
+  end
 end
