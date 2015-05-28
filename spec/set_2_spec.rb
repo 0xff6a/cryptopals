@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 require 'encryption/aes_cbc'
+require 'oracles/aes'
 
 describe 'Set 2' do
   context 'Challenge 1' do
@@ -71,17 +72,17 @@ describe 'Set 2' do
     let(:plaintext) { File.read('resources/plain.txt') }
 
     it 'should determine whether a plaintext has been encrypted with ECB' do
-      allow(Encryption::AES).to receive(:encryption_mode).and_return(:ECB)
-      ciphertext = Encryption::AES.random_encode(plaintext)
+      allow(Oracle::AES).to receive(:encryption_mode).and_return(:ECB)
+      ciphertext = Oracle::AES.random_encode(plaintext)
 
-      expect(Oracle::AES.detect(ciphertext)).to eq :ECB
+      expect(Oracle::AES.mode(ciphertext)).to eq :ECB
     end
 
     it 'should determine whether a plaintext has been encrypted with CBC' do
-      allow(Encryption::AES).to receive(:encryption_mode).and_return(:CBC)
-      ciphertext = Encryption::AES.random_encode(plaintext)
+      allow(Oracle::AES).to receive(:encryption_mode).and_return(:CBC)
+      ciphertext = Oracle::AES.random_encode(plaintext)
 
-      expect(Oracle::AES.detect(ciphertext)).to eq :CBC
+      expect(Oracle::AES.mode(ciphertext)).to eq :CBC
     end
   end
 end

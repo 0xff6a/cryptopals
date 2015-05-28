@@ -7,7 +7,7 @@ require 'encryption/repeat_key_xor'
 require 'analyzers/text_scorer'
 require 'analyzers/hamming_distance'
 
-require 'oracles/aes_ecb'
+require 'oracles/aes'
 
 describe 'Set 1' do
   context 'Challenge 1' do
@@ -113,17 +113,22 @@ describe 'Set 1' do
   end
 
   context 'Challenge 7' do
-    let(:input) { Base64.decode64(File.read('resources/7.txt')) }
+    let(:input)     { Base64.decode64(File.read('resources/7.txt')) }
+    let(:key)       { 'YELLOW SUBMARINE'                            }
+    let(:plaintext) { Encryption::AES::ECB.decode(Ascii.to_hex(input), Ascii.to_hex(key)) }
 
     it 'can decrypt an AES-ECB encoded file given the key' do
-      key = 'YELLOW SUBMARINE'
-      msg = Encryption::AES::ECB.decode(Ascii.to_hex(input), Ascii.to_hex(key))
-
-      expect(msg).to include(
+      expect(plaintext).to include(
         "I'm back and I'm ringin' the bell \n" +
         "A rockin' on the mike while the fly girls yell \n" +
         "In ecstasy in the back of me "
       )
+    end
+
+    it 'can encrypt AES in ECB mode' do
+      ciphertext = Encryption::AES::ECB.encode(plaintext, key)
+
+      expect(ciphertext).to eq Ascii.to_hex(input)
     end
   end
 
@@ -131,7 +136,7 @@ describe 'Set 1' do
     let(:input) { File.read('resources/8.txt').split("\n") }
 
     it 'can detect an AES-ECB encrypted text' do
-      ecb_detected = lambda { |s| Oracle::AES::ECB.detected?(Ascii.to_hex(s)) }
+      ecb_detected = lambda { |s| Oracle::AES::ecb_encrypted?(Ascii.to_hex(s)) }
 
       expect(input.count(&ecb_detected)).to eq 1
       expect(input.index(&ecb_detected)).to eq 132

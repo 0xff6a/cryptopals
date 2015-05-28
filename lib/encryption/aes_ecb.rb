@@ -14,7 +14,7 @@ module Encryption
         ascii_s   = PKCS7.pad_aes(ascii_s)
         encrypter = build_cipher(:encrypt, ascii_key)
 
-        encrypter.update(ascii_s) + encrypter.final
+        Ascii.to_hex(encrypter.update(ascii_s) + encrypter.final)
       end
 
       def decode(hex_s, hex_key)

@@ -1,4 +1,5 @@
 require_relative 'single_char_xor'
+require_relative '../analyzers/hamming_distance'
 
 module Encryption
   module RepeatKeyXOR
