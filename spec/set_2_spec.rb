@@ -1,8 +1,10 @@
+# encoding: BINARY
+
 require 'spec_helper'
 
 require 'encryption/aes_cbc'
 require 'oracles/aes'
-require 'utils/url'
+require 'challenge_helpers/c_13.rb'
 
 describe 'Set 2' do
   context 'Challenge 9' do
@@ -35,10 +37,10 @@ describe 'Set 2' do
     end
 
     it 'can remove padding' do
-      s         = "2afc4bacab28ef5c3686de177c030303"
+      s         = "YELLOW SUB\x06\x06\x06\x06\x06\x06"
       trimmed_s = PKCS7.trim_aes(s)
 
-      expect(trimmed_s).to eq "2afc4bacab28ef5c3686de177c"
+      expect(trimmed_s).to eq "YELLOW SUB"
     end
   end
 
@@ -108,8 +110,10 @@ describe 'Set 2' do
   end
 
   context 'Challenge 13' do
+    let(:email) { 'foo@bar.com' }
+
     it 'should be able to parse a structured cookie string' do
-      expect(URL.kv_parse("foo=bar&baz=qux&zap=zazzle")).to eq({
+      expect(ChallengeHelpers.kv_parse("foo=bar&baz=qux&zap=zazzle")).to eq({
         foo: 'bar',
         baz: 'qux',
         zap: 'zazzle'
@@ -117,24 +121,48 @@ describe 'Set 2' do
     end
 
     it '#profile_for - should be able to create a user profile hash from an email' do
-      email = 'foo@bar.com'
-      allow(email).to receive(:hash).and_return 10
-
-      expect(URL.profile_for(email)).to eq({
-        email: email,
-        uid:   10,
-        role:  'user'
-      })
+      expect(ChallengeHelpers.profile_for(email)).to eq("email=foo@bar.com&uid=10&role=user")
     end
 
     it '#profile_for - should not allow encoding metacharacters' do
-      email = 'foo@bar.com&role=admin'
-      allow(email).to receive(:hash).and_return 10
+      hack = 'foo@bar.com&role=admin'
 
-      expect(URL.profile_for(email)).to eq({
-        email: 'foo@bar.com%26role%3Dadmin',
-        uid:   10,
-        role:  'user'
+      expect(ChallengeHelpers.profile_for(hack)).to eq(
+        "email=foo@bar.com&uid=10&role=user"
+      )
+    end
+
+    it 'can create and encrypted profile and decrypt it' do
+      key    = SecureRandom.random_bytes(16)
+      ct     = ChallengeHelpers.encrypted_profile_for(email, key)
+      result = ChallengeHelpers.decrypt_profile(ct, Ascii.to_hex(key))
+
+      expect(result).to eq({
+        email: 'foo@bar.com',
+        role:  "user",
+        uid:   '10'
+      })
+    end
+
+    it 'can create a role=admin profile' do
+      s_1 = "xxxx@xxxx.com"
+      # -> ["email=xxxx@xxxx.", "com&uid=10&role=", "user\f\f\f\f\f\f\f\f\f\f\f\f"]
+
+      s_2 = "xxxxxxxxxxadmin\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b@des.com"
+      # -> ["email=xxxxxxxxxx", "admin\v\v\v\v\v\v\v\v\v\v\v", "@d.com&uid=10&ro", "le=user"]
+
+      key  = SecureRandom.random_bytes(16)
+      ct_1 = ChallengeHelpers.encrypted_profile_for(s_1, key)
+      ct_2 = ChallengeHelpers.encrypted_profile_for(s_2, key)
+
+      ct_admin = ct_1.slice(0,64) + ct_2.slice(32,32)
+
+      admin_1 = ChallengeHelpers.decrypt_profile(ct_admin, Ascii.to_hex(key))
+
+      expect(admin_1).to eq({
+        email: "xxxx@xxxx.com", 
+        uid:   "10", 
+        role:  "admin"
       })
     end
   end

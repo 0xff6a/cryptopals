@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 require_relative '../encryption/aes'
 
 module PKCS7
@@ -22,24 +24,26 @@ module PKCS7
     trim(hex_s, Encryption::AES::BLOCK_SIZE_BYTES)
   end
 
-  def trim(hex_s, block_size)
-    blocks = Hex.chunk(hex_s, block_size) 
-    return hex_s if invalid_pad?(blocks[-1])
+  def trim(ascii_s, block_size)
+    blocks = Ascii.chunk(ascii_s, block_size) 
+    return ascii_s if invalid_pad?(blocks[-1])
 
-    pad_size   = blocks[-1][-2..-1].hex
-    blocks[-1] = blocks[-1][0...-(2*pad_size)]
+    pad_size   = blocks[-1][-1].ord
+    blocks[-1] = blocks[-1][0...-pad_size]
     
     blocks.join('')
   end
 
   private_class_method
 
-  def invalid_pad?(hex_block)
-    last_byte = hex_block[-2..-1]
-    pad_size  = 2*last_byte.hex
+  def invalid_pad?(block)
+    last_byte = block[-1]
+    pad_size  = last_byte.ord
 
-    return true if pad_size > hex_block.size
+    return true if pad_size > block.size
 
-    Hex.chunk(hex_block[-pad_size..-1], 1).any?{ |b| b != last_byte }
+    Ascii.chunk(block[-pad_size..-1], 1).any?{ |b| b != last_byte }
   end
 end
+
+

@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 require 'openssl'
 
 require_relative 'aes'
@@ -37,7 +39,7 @@ module Encryption
         # -> m[0] = D(k, c[0]) ⨁ IV 
         # -> m[1] = D(k, c[1]) ⨁ c[0]
         # -> .....
-        ct        = Hex.to_ascii(PKCS7.trim_aes(hex_s))
+        ct        = Hex.to_ascii(hex_s)
         k         = Hex.to_ascii(hex_key)
         iv        = Hex.to_ascii(hex_iv) 
 
@@ -51,7 +53,7 @@ module Encryption
          m
         end
 
-        decrypted_blocks.join('')
+        PKCS7.trim_aes(decrypted_blocks.join(''))
       end
       
     end

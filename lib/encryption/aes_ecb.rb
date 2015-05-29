@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 require 'openssl'
 
 require_relative 'aes'
@@ -18,11 +20,11 @@ module Encryption
       end
 
       def decode(hex_s, hex_key)
-        ciphertext = Hex.to_ascii(PKCS7.trim_aes(hex_s))
+        ciphertext = Hex.to_ascii(hex_s)
         key        = Hex.to_ascii(hex_key)
         decrypter  = build_cipher(:decrypt, key)
 
-        decrypter.update(ciphertext) + decrypter.final
+        PKCS7.trim_aes(decrypter.update(ciphertext) + decrypter.final)
       end
 
       def build_cipher(type, key)

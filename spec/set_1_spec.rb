@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 require 'spec_helper'
 
 require 'encryption/aes_ecb'
