@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 require_relative 'bytes'
 
 module Hex

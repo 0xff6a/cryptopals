@@ -7,7 +7,7 @@ require 'oracles/aes'
 require 'challenge_helpers/c_13.rb'
 
 describe 'Set 2' do
-  context 'Challenge 9' do
+  context 'Challenge 9 - PKCS7 padding' do
     it 'should implement PKCS7 padding' do
       s        = 'YELLOW SUBMARINE'
       padded_s = PKCS7.pad(s, 20)
@@ -35,16 +35,9 @@ describe 'Set 2' do
 
       expect(padded_s).to eq s
     end
-
-    it 'can remove padding' do
-      s         = "YELLOW SUB\x06\x06\x06\x06\x06\x06"
-      trimmed_s = PKCS7.trim_aes(s)
-
-      expect(trimmed_s).to eq "YELLOW SUB"
-    end
   end
 
-  context 'Challenge 10' do
+  context 'Challenge 10 - Implement CBC Mode' do
     let(:iv)        { "\x00" * 16                                    }
     let(:key)       { 'YELLOW SUBMARINE'                             }
     let(:input)     { Base64.decode64(File.read('resources/10.txt')) }
@@ -71,7 +64,7 @@ describe 'Set 2' do
     end
   end
 
-  context 'Challenge 11' do
+  context 'Challenge 11 - ECB/CBC detection oracle' do
     let(:plaintext) { File.read('resources/plain.txt') }
 
     it 'should determine whether a plaintext has been encrypted with ECB' do
@@ -89,7 +82,7 @@ describe 'Set 2' do
     end
   end
 
-  context 'Challenge 12' do
+  context 'Challenge 12 - Byte-at-a-time ECB decryption' do
     let(:target) { 
       "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg" + 
       "aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq" +
@@ -109,7 +102,7 @@ describe 'Set 2' do
     end
   end
 
-  context 'Challenge 13' do
+  context 'Challenge 13 - ECB cut and paste' do
     let(:email) { 'foo@bar.com' }
 
     it 'should be able to parse a structured cookie string' do
@@ -148,7 +141,7 @@ describe 'Set 2' do
       s_1 = "xxxx@xxxx.com"
       # -> ["email=xxxx@xxxx.", "com&uid=10&role=", "user\f\f\f\f\f\f\f\f\f\f\f\f"]
 
-      s_2 = "xxxxxxxxxxadmin\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b@des.com"
+      s_2 = "xxxxxxxxxxadmin\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b\x0b@d.com"
       # -> ["email=xxxxxxxxxx", "admin\v\v\v\v\v\v\v\v\v\v\v", "@d.com&uid=10&ro", "le=user"]
 
       key  = SecureRandom.random_bytes(16)
@@ -165,5 +158,24 @@ describe 'Set 2' do
         role:  "admin"
       })
     end
+  end
+
+  context 'Challenge 15 - PKCS7 padding validation' do
+    it 'can strip padding' do
+      s         = "YELLOW SUB\x06\x06\x06\x06\x06\x06"
+      trimmed_s = PKCS7.trim_aes(s)
+
+      expect(trimmed_s).to eq "YELLOW SUB"
+    end
+
+    it 'throws an exception on invalid padding' do
+      s = "YELLOW SUB\x06\x06\x06"
+
+      expect { PKCS7.trim_aes(s) }.to raise_error(ArgumentError) 
+    end
+  end
+
+  context 'Challenge 16 - CBC bitflipping attacks' do
+    
   end
 end

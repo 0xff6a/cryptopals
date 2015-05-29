@@ -1,5 +1,8 @@
-require_relative '../oracles/aes'
+# encoding: BINARY
+
 require 'cgi'
+
+require_relative '../oracles/aes'
 
 module ChallengeHelpers
   module_function

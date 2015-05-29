@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 module Analyzer
   module TextScorer
     module_function

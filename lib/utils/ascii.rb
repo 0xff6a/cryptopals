@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 module Ascii
   module_function
 

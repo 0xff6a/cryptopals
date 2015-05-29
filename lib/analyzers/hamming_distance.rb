@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 require_relative '../utils/bytes'
 require_relative '../utils/hex'
 

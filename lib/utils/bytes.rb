@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 module Bytes
   module_function
 

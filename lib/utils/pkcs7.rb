@@ -26,7 +26,8 @@ module PKCS7
 
   def trim(ascii_s, block_size)
     blocks = Ascii.chunk(ascii_s, block_size) 
-    return ascii_s if invalid_pad?(blocks[-1])
+
+    raise ArgumentError, 'Invalid PKCS7 padding on supplied string' if invalid_pad?(blocks[-1])
 
     pad_size   = blocks[-1][-1].ord
     blocks[-1] = blocks[-1][0...-pad_size]

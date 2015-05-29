@@ -12,7 +12,7 @@ require 'analyzers/hamming_distance'
 require 'oracles/aes'
 
 describe 'Set 1' do
-  context 'Challenge 1' do
+  context 'Challenge 1 - Hex to B64' do
     let(:hex_s) {
       "49276d206b696c6c696e6720796f757220627261696e206c" + 
       "696b65206120706f69736f6e6f7573206d757368726f6f6d"
@@ -29,7 +29,7 @@ describe 'Set 1' do
     end   
   end 
 
-  context 'Challenge 2' do
+  context 'Challenge 2 - Fixed XOR' do
     it '#xor_hex should produce the XOR combination of 2 equal length hex buffers' do
       hex_1 = '1c0111001f010100061a024b53535009181c'
       hex_2 = '686974207468652062756c6c277320657965'
@@ -38,7 +38,7 @@ describe 'Set 1' do
     end
   end
 
-  context 'Challenge 3' do
+  context 'Challenge 3 - Single byte XOR' do
     it 'Analyzer can evaluate the frequency of characters in a string' do
       expect(Analyzer::TextScorer.absolute_frequency('abbcccddddeeeee')).to eq({
         "a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5
@@ -61,7 +61,7 @@ describe 'Set 1' do
     end
   end
 
-  xcontext 'Challenge 4 (skip for speed)' do
+  xcontext 'Challenge 4 (skip for speed) - Detect single char XOR' do
     it 'can identify the string encrypted with single character XOR' do
       input = File.readlines('resources/4.txt').map(&:chomp)
       result = input.map { |s| Encryption::SingleCharXOR.decode(s) }
@@ -71,7 +71,7 @@ describe 'Set 1' do
     end
   end
 
-  context 'Challenge 5' do
+  context 'Challenge 5 - Implement repeat key XOR' do
     it 'Encoder can apply repeating key XOR' do
       key     = 'ICE'
       string  = "Burning 'em, if you ain't quick and nimble\n" +
@@ -84,7 +84,7 @@ describe 'Set 1' do
     end
   end
 
-  context 'Challenge 6' do
+  context 'Challenge 6 - Break repeat key XOR' do
     let(:input) { Base64.decode64(File.read('resources/6.txt')) }
 
     it 'Analyzer can compute the hamming distance between two strings' do
@@ -114,7 +114,7 @@ describe 'Set 1' do
     end
   end
 
-  context 'Challenge 7' do
+  context 'Challenge 7 - AES in ECB mode' do
     let(:input)     { Base64.decode64(File.read('resources/7.txt')) }
     let(:key)       { 'YELLOW SUBMARINE'                            }
     let(:plaintext) { Encryption::AES::ECB.decode(Ascii.to_hex(input), Ascii.to_hex(key)) }
@@ -134,7 +134,7 @@ describe 'Set 1' do
     end
   end
 
-  context 'Challenge 8' do
+  context 'Challenge 8 -  Detect AES in ECB mode' do
     let(:input) { File.read('resources/8.txt').split("\n") }
 
     it 'can detect an AES-ECB encrypted text' do

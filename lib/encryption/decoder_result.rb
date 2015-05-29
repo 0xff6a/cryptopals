@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 module Encryption
   class DecoderResult
     INITIAL_SCORE =  1

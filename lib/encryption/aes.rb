@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 require 'securerandom'
 
 module Encryption

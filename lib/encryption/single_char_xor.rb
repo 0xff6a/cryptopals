@@ -1,3 +1,5 @@
+# encoding: BINARY
+
 require_relative 'decoder_result'
 
 module Encryption
